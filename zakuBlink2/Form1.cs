@@ -117,31 +117,45 @@ namespace zakuBlink2
             }
 
         }
-
+        /// <summary>
+        /// ザクヘッドにシリアルデータを送るスレッドメソッド
+        /// </summary>
         private void runSendZakuHead()
         {
-            byte[] outputdata = new byte[2];
-            outputdata[0] = 0x00;
+            byte[] outputBlinkMonoEye = new byte[2];
+            byte[] outputMoveMonoEye = new byte[2];
+            outputBlinkMonoEye[0] = 0x00;
+            long prescalerCounter = 0;
+            float currentReadCounterDiskReadByte = 0;
+
             while (true)
             {
                 if (serialPort.IsOpen)
                 {
+                    currentReadCounterDiskReadByte = readCounterDiskReadByte.NextValue();
+                    if (prescalerCounter % 10 == 0)//0.1秒ごとにアクセス
+                    {
+                        if (beforeValueReadCounterDiskReadByte != currentReadCounterDiskReadByte)
+                        {
+                            outputBlinkMonoEye[0] = 0xff;
+                            beforeValueReadCounterDiskReadByte = currentReadCounterDiskReadByte;
+                        }
+                        else
+                        {
+                            outputBlinkMonoEye[0] = 0x00;
+                        }
+                        outputBlinkMonoEye[1] = (byte)'\n';
+                        serialPort.Write(outputBlinkMonoEye, 0, 2);
+                        outputMoveMonoEye[0] = (byte)(90.0 + (130.0 - 90.0) / 100000000.0 * currentReadCounterDiskReadByte);
+                        outputMoveMonoEye[1] = (byte)'\n';
+                        System.Threading.Thread.Sleep(100);
+                        serialPort.Write(outputMoveMonoEye, 0, 2);
+                    }
 
-                    if (beforeValueReadCounterDiskReadByte != readCounterDiskReadByte.NextValue())
-                    {
-                        outputdata[0] = 0xff;
-                        beforeValueReadCounterDiskReadByte = readCounterDiskReadByte.NextValue();
-                    }
-                    else
-                    {
-                        outputdata[0] = 0x00;
-                    }
-                    outputdata[1] = (byte)'\n';
-                    serialPort.Write(outputdata, 0, 2);
                 }
-                //0.1秒待機する
-                System.Threading.Thread.Sleep(100);
-
+                //0.01秒待機する
+                System.Threading.Thread.Sleep(10);
+                ++prescalerCounter;
             }
         }
         private void button1_Click(object sender, EventArgs e)
