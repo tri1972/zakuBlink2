@@ -36,7 +36,7 @@ namespace zakuBlink2
         private PerformanceCounter readCounterDiskWriteByte;
 
         private static float beforeValueReadCounterDiskReadByte;
-
+        private static float beforeValueReadCounterDiskWriteByte;
         public Form1()
         {
             InitializeComponent();
@@ -127,18 +127,22 @@ namespace zakuBlink2
             outputBlinkMonoEye[0] = 0x00;
             long prescalerCounter = 0;
             float currentReadCounterDiskReadByte = 0;
+            float currentReadCounterDiskWriteByte = 0;
 
             while (true)
             {
                 if (serialPort.IsOpen)
                 {
                     currentReadCounterDiskReadByte = readCounterDiskReadByte.NextValue();
+                    currentReadCounterDiskWriteByte = readCounterDiskWriteByte.NextValue();
                     if (prescalerCounter % 10 == 0)//0.1秒ごとにアクセス
                     {
-                        if (beforeValueReadCounterDiskReadByte != currentReadCounterDiskReadByte)
+                        if (beforeValueReadCounterDiskReadByte != currentReadCounterDiskReadByte
+                            || beforeValueReadCounterDiskWriteByte!=currentReadCounterDiskWriteByte)
                         {
                             outputBlinkMonoEye[0] = 0xff;
                             beforeValueReadCounterDiskReadByte = currentReadCounterDiskReadByte;
+                            beforeValueReadCounterDiskWriteByte = currentReadCounterDiskWriteByte;
                         }
                         else
                         {
@@ -146,7 +150,7 @@ namespace zakuBlink2
                         }
                         outputBlinkMonoEye[1] = (byte)'\n';
                         serialPort.Write(outputBlinkMonoEye, 0, 2);
-                        outputMoveMonoEye[0] = (byte)(90.0 + (130.0 - 90.0) / 100000000.0 * currentReadCounterDiskReadByte);
+                        outputMoveMonoEye[0] = (byte)(90.0 + (130.0 - 90.0) / 100000000.0 * (currentReadCounterDiskReadByte- currentReadCounterDiskWriteByte));
                         outputMoveMonoEye[1] = (byte)'\n';
                         System.Threading.Thread.Sleep(100);
                         serialPort.Write(outputMoveMonoEye, 0, 2);
