@@ -24,22 +24,32 @@ Servo myservo;  // create servo object to control a servo
 int pos = 0;    // variable to store the servo position
 int counter=0;
 int duty = 0;
-bool initTime=true;
+bool initTime=true;//ザクヘッドの初期動作を行うフラグ
+bool monoEyeBlink=false;//モノアイが点滅するか否か
+bool monoEyeAutoBlink=false; //モノアイが自動的に点滅するか否か
+long noAccessPeriod=0;
+long timerPreScolor=0;
 
 void timerIsr()
-{    
-    analogWrite(9, duty);
-    counter+=1;
-    if(counter<20){
-      duty+=5;
-    }else if(20 <= counter && counter <=38){
-      duty-=5;
-    }else{
-      counter=0;
-      duty=0;
-    }
+{  
+    if(monoEyeBlink==true){ 
+      analogWrite(9, duty);
+      counter+=1;
+      if(counter<20){
+        duty+=5;
+      }else if(20 <= counter && counter <=38){
+        duty-=5;
+      }else{
+        counter=0;
+        duty=0;
+      }
     //Serial.println(counter,DEC);
     //Serial.println(duty,DEC);
+    }
+    if(timerPreScolor % 10){//1sごとにカウントするようTimer割り込みを10分周
+      noAccessPeriod++;
+    }
+    timerPreScolor++;
 }
 
 void setup() {
@@ -73,7 +83,9 @@ void loop() {
       delay(15);                       // waits 15ms for the servo to reach the position
     }
     //myservo.writeMicroseconds(1500);  // サーボを中間点に設定します
-    //TimerTc3.attachInterrupt(timerIsr);
+    monoEyeBlink=true;
+    TimerTc3.attachInterrupt(timerIsr);
+    
     initTime=false;
   }
   byte buf;
@@ -81,6 +93,9 @@ void loop() {
   int i;
   // 受信データがあった時だけ、処理を行う
   if ( Serial.available() ) {       // 受信データがあるか？
+      pinMode(9,OUTPUT);
+    noAccessPeriod=0;
+    monoEyeBlink=false;
     while((buf = Serial.read())!='\n'){// 1文字だけ読み込む
       key=buf;
       Serial.write( key );            // 1文字送信。受信データをそのまま送り返す。
@@ -93,24 +108,10 @@ void loop() {
         digitalWrite(9, LOW);    // 消灯
       }else{
     }
-    /*
-    for(i=0;i<key;i++){
-      digitalWrite(9, HIGH);   // 点灯
-      delay(500);          
-      digitalWrite(9, LOW);    // 消灯
-      delay(500);              //
-    }*/
-    /*
-    digitalWrite(9,HIGH);
-    for (pos = 20; pos <= 160; pos += 1) { // goes from 0 degrees to 180 degrees
-      // in steps of 1 degree
-      myservo.write(pos);              // tell servo to go to position in variable 'pos'
-      delay(15);                       // waits 15ms for the servo to reach the position
-      
+    //monoEyeBlink=true;
+  }else{
+    if(noAccessPeriod>=10){
+      monoEyeBlink=true;
     }
-    for (pos = 140; pos >= 40; pos -= 1) { // goes from 180 degrees to 0 degrees
-      myservo.write(pos);              // tell servo to go to position in variable 'pos'
-      delay(15);                       // waits 15ms for the servo to reach the position
-    }*/
   }
 }

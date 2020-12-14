@@ -37,6 +37,25 @@ namespace zakuBlink2
 
         private static float beforeValueReadCounterDiskReadByte;
         private static float beforeValueReadCounterDiskWriteByte;
+
+        /// <summary>
+        /// LogocDiskのパフォーマンスモニター値を取得します
+        /// </summary>
+        /// <param name="counterName">カウンター名</param>
+        /// <returns></returns>
+        private static PerformanceCounter getInstancePerformanceMonitorDiskAccess(String counterName)
+        {
+            var outputInstance = new PerformanceCounter();
+            ((System.ComponentModel.ISupportInitialize)(outputInstance)).BeginInit();
+            outputInstance.CategoryName = "LogicalDisk";
+            outputInstance.CounterName = counterName;
+            outputInstance.InstanceName = "_Total";
+            ((System.ComponentModel.ISupportInitialize)(outputInstance)).EndInit();
+            return outputInstance;
+        }
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
@@ -49,23 +68,8 @@ namespace zakuBlink2
             {
                 runSendZakuHead();
             });
-
-
-            this.readCounterDiskReadByte = new PerformanceCounter();
-            ((System.ComponentModel.ISupportInitialize)(this.readCounterDiskReadByte)).BeginInit();
-            this.readCounterDiskReadByte.CategoryName = "LogicalDisk";
-            this.readCounterDiskReadByte.CounterName = "Disk Read Bytes/sec";
-            this.readCounterDiskReadByte.InstanceName = "_Total";
-            ((System.ComponentModel.ISupportInitialize)(this.readCounterDiskReadByte)).EndInit();
-
-            this.readCounterDiskWriteByte = new PerformanceCounter();
-            ((System.ComponentModel.ISupportInitialize)(this.readCounterDiskWriteByte)).BeginInit();
-            this.readCounterDiskWriteByte.CategoryName = "LogicalDisk";
-            this.readCounterDiskWriteByte.CounterName = "Disk Write Bytes/sec";
-            this.readCounterDiskWriteByte.InstanceName = "_Total";
-            ((System.ComponentModel.ISupportInitialize)(this.readCounterDiskWriteByte)).EndInit();
-
-
+            this.readCounterDiskReadByte = getInstancePerformanceMonitorDiskAccess("Disk Read Bytes/sec");
+            this.readCounterDiskWriteByte = getInstancePerformanceMonitorDiskAccess("Disk Write Bytes/sec");
         }
 
 
@@ -90,7 +94,9 @@ namespace zakuBlink2
             if (portComboBox.Items.Count > 0)
                 portComboBox.SelectedIndex = 0;
         }
-
+        /// <summary>
+        /// パフォーマンスモニター値取得ランナブル
+        /// </summary>
         private void runPerformanceMonitor()
         {
             while (true)
@@ -113,9 +119,7 @@ namespace zakuBlink2
                 }
                 //1秒待機する
                 System.Threading.Thread.Sleep(1000);
-
             }
-
         }
         /// <summary>
         /// ザクヘッドにシリアルデータを送るスレッドメソッド
@@ -213,32 +217,6 @@ namespace zakuBlink2
             {
                 MessageBox.Show("数値データは30～150しか有効ではありません");
             }
-            /*
-            try
-            {
-                byte[] outputdata = new byte[2];
-                if (serialPort.IsOpen)
-                {
-                    outputdata[0] = 
-                    outputdata[1] = (byte)'\n';
-                    if (0 <= outputdata[0] && outputdata[0] <= 180)
-                    {
-                        serialPort.Write(outputdata, 0, 2);
-                    }
-                    else
-                    {
-                        MessageBox.Show("数値データは30～150しか有効ではありません");
-                    }
-                }
-            }
-            catch(System.UnauthorizedAccessException err)
-            {
-                MessageBox.Show(err.Message);
-            }
-            catch(System.InvalidOperationException err)
-            {
-                MessageBox.Show(err.Message);
-            }*/
         }
 
         private void button3_Click(object sender, EventArgs e)
