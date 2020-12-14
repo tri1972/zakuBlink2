@@ -12,7 +12,7 @@ using System.IO.Ports;
 
 namespace zakuBlink2
 {
-    public partial class Form1 : Form
+    public partial class ZakuBlinkForm : Form
     {
         private int currentCompoBoxSerialIndex;
 
@@ -39,7 +39,7 @@ namespace zakuBlink2
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public Form1()
+        public ZakuBlinkForm()
         {
             InitializeComponent();
             Task taskPerformanceMonitor = Task.Run(() =>

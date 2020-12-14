@@ -1,6 +1,6 @@
 ﻿namespace zakuBlink2
 {
-    partial class Form1
+    partial class ZakuBlinkForm
     {
         /// <summary>
         /// 必要なデザイナー変数です。
@@ -209,7 +209,7 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // Form1
+            // ZakuBlinkForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -229,8 +229,8 @@
             this.Controls.Add(this.portComboBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "ZakuBlinkForm";
+            this.Text = "ZakuBlinkForm";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.performanceCounter1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.performanceCounter2)).EndInit();
