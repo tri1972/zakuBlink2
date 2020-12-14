@@ -35,24 +35,7 @@ namespace zakuBlink2
         /// </summary>
         private PerformanceCounter readCounterDiskWriteByte;
 
-        private static float beforeValueReadCounterDiskReadByte;
-        private static float beforeValueReadCounterDiskWriteByte;
 
-        /// <summary>
-        /// LogocDiskのパフォーマンスモニター値を取得します
-        /// </summary>
-        /// <param name="counterName">カウンター名</param>
-        /// <returns></returns>
-        private static PerformanceCounter getInstancePerformanceMonitorDiskAccess(String counterName)
-        {
-            var outputInstance = new PerformanceCounter();
-            ((System.ComponentModel.ISupportInitialize)(outputInstance)).BeginInit();
-            outputInstance.CategoryName = "LogicalDisk";
-            outputInstance.CounterName = counterName;
-            outputInstance.InstanceName = "_Total";
-            ((System.ComponentModel.ISupportInitialize)(outputInstance)).EndInit();
-            return outputInstance;
-        }
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -61,27 +44,20 @@ namespace zakuBlink2
             InitializeComponent();
             Task taskPerformanceMonitor = Task.Run(() =>
             {
-                runPerformanceMonitor();
+                RunPerformanceMonitor();
             });
 
             Task taskSendZakuHead = Task.Run(() =>
             {
-                runSendZakuHead();
+                SenderSerialPort.RunSendZakuHead(this.serialPort,this.readCounterDiskReadByte,this.readCounterDiskWriteByte);
             });
-            this.readCounterDiskReadByte = getInstancePerformanceMonitorDiskAccess("Disk Read Bytes/sec");
-            this.readCounterDiskWriteByte = getInstancePerformanceMonitorDiskAccess("Disk Write Bytes/sec");
+            this.readCounterDiskReadByte 
+                = GetterPerformanceMonitor.GetInstancePerformanceMonitorDiskAccess("Disk Read Bytes/sec");
+            this.readCounterDiskWriteByte 
+                = GetterPerformanceMonitor.GetInstancePerformanceMonitorDiskAccess("Disk Write Bytes/sec");
         }
 
 
-        private void initOpenSerialPort()
-        {
-            serialPort.BaudRate = 9600;
-            serialPort.Parity = Parity.None;
-            serialPort.DataBits = 8;
-            serialPort.StopBits = StopBits.One;
-            serialPort.Handshake = Handshake.None;
-            serialPort.PortName = portComboBox.Items[this.currentCompoBoxSerialIndex].ToString();
-        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -97,7 +73,7 @@ namespace zakuBlink2
         /// <summary>
         /// パフォーマンスモニター値取得ランナブル
         /// </summary>
-        private void runPerformanceMonitor()
+        private void RunPerformanceMonitor()
         {
             while (true)
             {
@@ -115,55 +91,9 @@ namespace zakuBlink2
 
                         }));
                     }
-                    //this.ReadCounterValue = readData;
                 }
                 //1秒待機する
                 System.Threading.Thread.Sleep(1000);
-            }
-        }
-        /// <summary>
-        /// ザクヘッドにシリアルデータを送るスレッドメソッド
-        /// </summary>
-        private void runSendZakuHead()
-        {
-            byte[] outputBlinkMonoEye = new byte[2];
-            byte[] outputMoveMonoEye = new byte[2];
-            outputBlinkMonoEye[0] = 0x00;
-            long prescalerCounter = 0;
-            float currentReadCounterDiskReadByte = 0;
-            float currentReadCounterDiskWriteByte = 0;
-
-            while (true)
-            {
-                if (serialPort.IsOpen)
-                {
-                    currentReadCounterDiskReadByte = readCounterDiskReadByte.NextValue();
-                    currentReadCounterDiskWriteByte = readCounterDiskWriteByte.NextValue();
-                    if (prescalerCounter % 10 == 0)//0.1秒ごとにアクセス
-                    {
-                        if (beforeValueReadCounterDiskReadByte != currentReadCounterDiskReadByte
-                            || beforeValueReadCounterDiskWriteByte!=currentReadCounterDiskWriteByte)
-                        {
-                            outputBlinkMonoEye[0] = 0xff;
-                            beforeValueReadCounterDiskReadByte = currentReadCounterDiskReadByte;
-                            beforeValueReadCounterDiskWriteByte = currentReadCounterDiskWriteByte;
-                        }
-                        else
-                        {
-                            outputBlinkMonoEye[0] = 0x00;
-                        }
-                        outputBlinkMonoEye[1] = (byte)'\n';
-                        serialPort.Write(outputBlinkMonoEye, 0, 2);
-                        outputMoveMonoEye[0] = (byte)(90.0 + (130.0 - 90.0) / 100000000.0 * (currentReadCounterDiskReadByte- currentReadCounterDiskWriteByte));
-                        outputMoveMonoEye[1] = (byte)'\n';
-                        System.Threading.Thread.Sleep(100);
-                        serialPort.Write(outputMoveMonoEye, 0, 2);
-                    }
-
-                }
-                //0.01秒待機する
-                System.Threading.Thread.Sleep(10);
-                ++prescalerCounter;
             }
         }
         private void button1_Click(object sender, EventArgs e)
@@ -183,35 +113,13 @@ namespace zakuBlink2
         {
 
         }
-        private void sendByteData(byte sendData)
-        {
-            try
-            {
-                byte[] outputdata = new byte[2];
-                if (serialPort.IsOpen)
-                {
-                    outputdata[0] = sendData;
-                    outputdata[1] = (byte)'\n';
-                    serialPort.Write(outputdata, 0, 2);
-                }
-            }
-            catch (System.UnauthorizedAccessException err)
-            {
-                MessageBox.Show(err.Message);
-            }
-            catch (System.InvalidOperationException err)
-            {
-                MessageBox.Show(err.Message);
-            }
-
-        }
 
         private void button2_Click(object sender, EventArgs e)
         {
             byte outputData= (byte)this.numericUpDown1.Value;
             if (0 <= outputData && outputData <= 180)
             {
-                sendByteData(outputData);
+                SenderSerialPort.SendByteData(outputData,this.serialPort);
             }
             else
             {
@@ -223,9 +131,8 @@ namespace zakuBlink2
         {
             try
             {
-                this.initOpenSerialPort();
+                SenderSerialPort.InitOpenSerialPort(this.serialPort, portComboBox.Items[this.currentCompoBoxSerialIndex].ToString());
                 serialPort.Open();
-                //serialPort.Close();
             }
             catch (System.UnauthorizedAccessException err)
             {
