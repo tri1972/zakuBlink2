@@ -17,6 +17,10 @@ namespace zakuBlink2
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new ZakuBlinkForm());
+
+            // Formを表示しないで実行する
+            //new ZakuBlinkForm();
+            //Application.Run();
         }
     }
 }

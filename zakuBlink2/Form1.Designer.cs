@@ -29,38 +29,18 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.performanceCounter1 = new System.Diagnostics.PerformanceCounter();
             this.performanceCounter2 = new System.Diagnostics.PerformanceCounter();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.portComboBox = new System.Windows.Forms.ComboBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.performanceCounter1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.performanceCounter2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(266, 247);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(139, 29);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Send Data";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label1
             // 
@@ -83,75 +63,24 @@
             this.performanceCounter2.CounterName = "Disk Read Bytes/sec";
             this.performanceCounter2.InstanceName = "_Total";
             // 
-            // serialPort
-            // 
-            this.serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort_DataReceived);
-            // 
             // portComboBox
             // 
             this.portComboBox.FormattingEnabled = true;
-            this.portComboBox.Location = new System.Drawing.Point(60, 213);
+            this.portComboBox.Location = new System.Drawing.Point(51, 110);
             this.portComboBox.Name = "portComboBox";
             this.portComboBox.Size = new System.Drawing.Size(121, 26);
             this.portComboBox.TabIndex = 3;
             this.portComboBox.SelectedIndexChanged += new System.EventHandler(this.portComboBox_SelectedIndexChanged);
             // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(60, 251);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(200, 25);
-            this.textBox1.TabIndex = 4;
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.Location = new System.Drawing.Point(201, 295);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            180,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(120, 25);
-            this.numericUpDown1.TabIndex = 5;
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(356, 290);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(139, 33);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "Send Data";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(266, 213);
+            this.button3.Location = new System.Drawing.Point(194, 110);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(94, 28);
             this.button3.TabIndex = 7;
             this.button3.Text = "Connect!";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(60, 350);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(463, 156);
-            this.textBox2.TabIndex = 8;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(57, 329);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(82, 18);
-            this.label2.TabIndex = 9;
-            this.label2.Text = "ReadData";
             // 
             // label3
             // 
@@ -180,86 +109,37 @@
             this.label5.TabIndex = 12;
             this.label5.Text = "Disk Write Bytes/sec";
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(57, 297);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(97, 18);
-            this.label6.TabIndex = 13;
-            this.label6.Text = "モノアイ角度";
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(510, 290);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(130, 29);
-            this.button4.TabIndex = 14;
-            this.button4.Text = "モノアイ on";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(658, 290);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(130, 28);
-            this.button5.TabIndex = 15;
-            this.button5.Text = "モノアイ off";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
             // ZakuBlinkForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 518);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.label6);
+            this.ClientSize = new System.Drawing.Size(624, 177);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.portComboBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button1);
             this.Name = "ZakuBlinkForm";
             this.Text = "ZakuBlinkForm";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.ZakuBlink_Load);
             ((System.ComponentModel.ISupportInitialize)(this.performanceCounter1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.performanceCounter2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Diagnostics.PerformanceCounter performanceCounter1;
         private System.Diagnostics.PerformanceCounter performanceCounter2;
         private System.IO.Ports.SerialPort serialPort;
         private System.Windows.Forms.ComboBox portComboBox;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button5;
     }
 }
 

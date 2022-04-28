@@ -35,13 +35,18 @@ namespace zakuBlink2
         /// </summary>
         private PerformanceCounter readCounterDiskWriteByte;
 
+        NotifyIcon notifyIcon;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public ZakuBlinkForm()
-        {
+        {  
             InitializeComponent();
+            // タスクバーに表示しない
+            this.ShowInTaskbar = false;
+            setComponents();
+
             Task taskPerformanceMonitor = Task.Run(() =>
             {
                 RunPerformanceMonitor();
@@ -56,10 +61,57 @@ namespace zakuBlink2
             this.readCounterDiskWriteByte 
                 = GetterPerformanceMonitor.GetInstancePerformanceMonitorDiskAccess("Disk Write Bytes/sec");
         }
+        /// <summary>
+        /// 主にタスクトレイに常駐させるよう実行
+        /// 参考
+        /// https://www.fenet.jp/dotnet/column/environment/4527/
+        /// </summary>
+        private void setComponents()
+        {
+            notifyIcon = new NotifyIcon();
+            // アイコンの設定
+            notifyIcon.Icon = new Icon(@"..\icon\Star_24682.ico");
+            // アイコンを表示する
+            notifyIcon.Visible = true;
+            // アイコンにマウスポインタを合わせたときのテキスト
+            notifyIcon.Text = "NortyFyTest";
 
+            // コンテキストメニュー
+            ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
+            ToolStripMenuItem toolStripMenuItemDebug = new ToolStripMenuItem();
+            toolStripMenuItemDebug.Text = " & Debug";
+            toolStripMenuItemDebug.Click += ToolStripMenuItem_Click_Debug;
+            contextMenuStrip.Items.Add(toolStripMenuItemDebug);
 
+            ToolStripMenuItem toolStripMenuItemExit = new ToolStripMenuItem();
+            toolStripMenuItemExit.Text = " & 終了";
+            toolStripMenuItemExit.Click += ToolStripMenuItem_Click_Exit;
+            contextMenuStrip.Items.Add(toolStripMenuItemExit);
+            
+            notifyIcon.ContextMenuStrip = contextMenuStrip;
 
-        private void Form1_Load(object sender, EventArgs e)
+            // NotifyIconのクリックイベント
+            notifyIcon.Click += NotifyIcon_Click;
+        }
+        private void NotifyIcon_Click(object sender, EventArgs e)
+        {
+            // Formの表示/非表示を反転
+            this.Visible = !this.Visible;
+        }
+
+        private void ToolStripMenuItem_Click_Debug(object sender, EventArgs e)
+        {
+            var debugForm = new Debug_Form(this.serialPort);
+            debugForm.ShowDialog();
+        }
+
+        private void ToolStripMenuItem_Click_Exit(object sender, EventArgs e)
+        {
+            // アプリケーションの終了
+            Application.Exit();
+        }
+
+        private void ZakuBlink_Load(object sender, EventArgs e)
         {
 
             string[] ports = SerialPort.GetPortNames();
@@ -98,10 +150,6 @@ namespace zakuBlink2
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            if (serialPort.IsOpen)
-            {
-                serialPort.Write(textBox1.Text + "\n");
-            }
         }
 
         private void portComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -116,15 +164,6 @@ namespace zakuBlink2
 
         private void button2_Click(object sender, EventArgs e)
         {
-            byte outputData= (byte)this.numericUpDown1.Value;
-            if (0 <= outputData && outputData <= 180)
-            {
-                SenderSerialPort.SendByteData(outputData,this.serialPort);
-            }
-            else
-            {
-                MessageBox.Show("数値データは30～150しか有効ではありません");
-            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -154,23 +193,5 @@ namespace zakuBlink2
 
         }
 
-        delegate void SetTextCallback(string text);
-        private void Response(string text)
-        {
-            if (textBox1.InvokeRequired)
-            {
-                SetTextCallback d = new SetTextCallback(Response);
-                Invoke(d, new object[] { text });
-            }
-            else
-            {
-                textBox2.AppendText(text + "\n");
-            }
-        }
-        private void serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            string str = serialPort.ReadLine();
-            Response(str);
-        }
     }
 }
